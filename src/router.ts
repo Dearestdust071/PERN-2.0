@@ -1,7 +1,7 @@
 import { Router } from "express"
 import { createProduct, deleteProductById, getAllProducts, getProductByID, updateProductByID } from './handlers/product';
 import { handleInputErrors } from "./middleware";
-import { body } from "express-validator";
+
 const router = Router()
 
 router.get('/', getAllProducts,(req, res)=>{
