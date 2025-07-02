@@ -2,6 +2,7 @@ import { Router } from "express"
 import { createProduct, deleteProductById, getAllProducts, getProductByID, updateAvailability, updateProductByID } from './handlers/product';
 import { handleInputErrors } from "./middleware";
 import{ check, Result, validationResult, body, param} from 'express-validator';
+import { createUser, deleteUsersById, getAllUsers, getUsersByID, updateUsersByID } from "./handlers/users";
 const router = Router()
 
 router.get('/', getAllProducts,(req, res)=>{
@@ -56,6 +57,94 @@ router.patch('/:id',
     handleInputErrors, updateAvailability,(req,res)=>{
     res.send("Hola desde patch")
 })
+
+
+
+// GET all users
+router.get("/", getAllUsers, (req, res) => {
+  res.send("Listado de usuarios obtenido correctamente");
+});
+
+// GET user by ID
+router.get(
+  "/:id",
+  param("id").isNumeric().withMessage("ID tiene que ser numérico."),
+  param("id").isInt().withMessage("ID tiene que ser entero."),
+  handleInputErrors,
+  getUsersByID,
+  (req, res) => {
+    res.send("Usuario obtenido por ID");
+  }
+);
+
+// CREATE user
+router.post(
+  "/",
+  body("username")
+    .notEmpty().withMessage("Falta el nombre de usuario")
+    .isString().withMessage("Formato de nombre de usuario inválido"),
+  body("email")
+    .notEmpty().withMessage("Falta el email")
+    .isEmail().withMessage("Formato de email inválido"),
+  body("password")
+    .notEmpty().withMessage("Falta el password")
+    .isString().withMessage("Formato de password inválido")
+    .isLength({ min: 6 }).withMessage("La contraseña debe tener al menos 6 caracteres"),
+  body("role")
+    .optional()
+    .isIn(["user", "admin"]).withMessage("Role inválido, permitido: user o admin"),
+  handleInputErrors,
+  createUser
+);
+
+// UPDATE user
+router.put(
+  "/:id",
+  param("id").isNumeric().withMessage("ID tiene que ser numérico."),
+  param("id").isInt().withMessage("ID tiene que ser entero."),
+  body("username")
+    .optional()
+    .isString().withMessage("Formato de nombre de usuario inválido"),
+  body("email")
+    .optional()
+    .isEmail().withMessage("Formato de email inválido"),
+  body("password")
+    .optional()
+    .isString().withMessage("Formato de password inválido")
+    .isLength({ min: 6 }).withMessage("La contraseña debe tener al menos 6 caracteres"),
+  body("role")
+    .optional()
+    .isIn(["user", "admin"]).withMessage("Role inválido, permitido: user o admin"),
+  handleInputErrors,
+  updateUsersByID,
+  (req, res) => {
+    res.send("Usuario actualizado");
+  }
+);
+
+// DELETE user
+router.delete(
+  "/:id",
+  param("id").isNumeric().withMessage("ID tiene que ser numérico."),
+  param("id").isInt().withMessage("ID tiene que ser entero."),
+  handleInputErrors,
+  deleteUsersById,
+  (req, res) => {
+    res.send("Usuario eliminado");
+  }
+);
+
+// PATCH user availability
+router.patch(
+  "/:id",
+  param("id").isNumeric().withMessage("ID tiene que ser numérico."),
+  param("id").isInt().withMessage("ID tiene que ser entero."),
+  handleInputErrors,
+  updateAvailability,
+  (req, res) => {
+    res.send("Estado de disponibilidad actualizado");
+  }
+);
 
 
 export default router
